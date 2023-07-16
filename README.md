@@ -1,2 +1,3 @@
 # Binary_Search_Trees
-Implementation of balanced binary search tree using javascript
+
+Implementation of balanced binary search tree using javascript from sorted array

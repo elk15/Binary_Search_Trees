@@ -136,9 +136,22 @@ class Tree {
             this.levelOrderRec(callback, queue)
         }
     }
+
+    height(node) {
+        if (node === null) return 0;
+        if (node.leftChild === null && node.rightChild === null) return 0;
+        return 1 +  Math.max(this.height(node.leftChild), this.height(node.rightChild));
+    }
+
+    depth(node, root = this.root) {
+        if (node === null) return 0;
+        if (node.data === root.data) return 0;
+        if (node.data < root.data) return 1 + this.depth(node, root.leftChild);
+        if (node.data > root.data) return 1 + this.depth(node, root.rightChild);
+    }
 }
 
 const tree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
-tree.levelOrderRec((n) => console.log(n.data * 2));
 tree.prettyPrint(tree.getRoot());
+console.log(tree.depth(tree.find(4)));
 

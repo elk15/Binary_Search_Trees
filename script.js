@@ -115,26 +115,50 @@ class Tree {
     }
 
     levelOrder(callback = null) {
-        let queue = [];
-        queue.push(this.root);
-        if (callback === null) return queue;
+        let queue = [this.root];
+        let results = [];
         while(Array.isArray(queue) && queue.length) {
             let currentNode = queue.shift();
-            callback(currentNode);
+            callback !== null ? results.push(callback(currentNode)) : results.push(currentNode.data);
             if (currentNode.leftChild !== null) queue.push(currentNode.leftChild);
             if (currentNode.rightChild !== null) queue.push(currentNode.rightChild);
         }
+        if(results) return results;
     }
     
-    levelOrderRec(callback = null, queue = [this.root]) {
-        if (callback === null) return queue;
+    levelOrderRec(callback = null, queue = [this.root], results = []) {
         if (Array.isArray(queue) && queue.length) {
             let currentNode = queue.shift();
-            callback(currentNode);
+            callback !== null ? results.push(callback(currentNode)) : results.push(currentNode.data);
             if (currentNode.leftChild !== null) queue.push(currentNode.leftChild);
             if (currentNode.rightChild !== null) queue.push(currentNode.rightChild);
-            this.levelOrderRec(callback, queue)
+            this.levelOrderRec(callback, queue, results)
         }
+        if (results) return results;
+    }
+
+    inorder(callback = null, node = this.root, results = []) {
+        if (node === null) return;
+        this.inorder(callback, node.leftChild, results);
+        callback !== null ? results.push(callback(node)) : results.push(node.data);
+        this.inorder(callback, node.rightChild, results);
+        if(results) return results;
+    }
+
+    postorder(callback = null, node = this.root, results = []) {
+        if (node === null) return;
+        this.postorder(callback, node.leftChild, results);
+        this.postorder(callback, node.rightChild, results);
+        callback !== null ? results.push(callback(node)) : results.push(node.data);
+        if(results) return results;
+    }
+
+    preorder(callback = null, node = this.root, results = []) {
+        if (node === null) return;
+        callback !== null ? results.push(callback(node)) : results.push(node.data);
+        this.preorder(callback, node.leftChild, results);
+        this.preorder(callback, node.rightChild, results);
+        if(results) return results;
     }
 
     height(node) {
@@ -149,9 +173,26 @@ class Tree {
         if (node.data < root.data) return 1 + this.depth(node, root.leftChild);
         if (node.data > root.data) return 1 + this.depth(node, root.rightChild);
     }
+
+    isBalanced(node = this.root) {
+        if (node === null) return true;
+        let heightDiff = Math.abs(this.height(node.leftChild) - this.height(node.rightChild));
+        return heightDiff <= 1 && this.isBalanced(node.leftChild) && this.isBalanced(node.rightChild);
+    }
+
+    rebalance() {
+        let inorderArray = this.inorder();
+        this.root = this.buildTree(inorderArray, 0, inorderArray.length - 1);
+    }
 }
 
 const tree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
+tree.insert(7000);
+tree.insert(8000);
 tree.prettyPrint(tree.getRoot());
-console.log(tree.depth(tree.find(4)));
+console.log(tree.isBalanced());
+tree.rebalance();
+tree.prettyPrint(tree.getRoot());
+console.log(tree.isBalanced());
+
 
